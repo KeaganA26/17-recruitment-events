@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { JobCard } from "@/components/JobCard";
 import { JobFilters, type JobFilterState } from "@/components/JobFilters";
-import { jobs } from "@/data/jobs";
+import type { Job } from "@/data/jobs";
 
 const emptyFilters: JobFilterState = {
   keyword: "",
@@ -12,7 +12,7 @@ const emptyFilters: JobFilterState = {
   type: "",
 };
 
-export function JobsExplorer() {
+export function JobsExplorer({ jobs }: { jobs: Job[] }) {
   const [filters, setFilters] = useState<JobFilterState>(emptyFilters);
 
   const results = useMemo(() => {
@@ -28,7 +28,7 @@ export function JobsExplorer() {
       const matchesType = !filters.type || job.type === filters.type;
       return matchesKeyword && matchesLocation && matchesCategory && matchesType;
     });
-  }, [filters]);
+  }, [filters, jobs]);
 
   return (
     <div className="space-y-8">

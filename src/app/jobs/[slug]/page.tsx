@@ -5,13 +5,14 @@ import { ArrowLeft, Banknote, Briefcase, CalendarDays, MapPin, Users } from "luc
 import { ApplyDialog } from "@/components/ApplyDialog";
 import { JobCard } from "@/components/JobCard";
 import { Badge } from "@/components/ui/badge";
-import { getJobBySlug, getRelatedJobs, jobs } from "@/data/jobs";
+import { getJobBySlug, getJobs, getRelatedJobs } from "@/data/jobs";
 
 type JobPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const jobs = await getJobs();
   return jobs.map((job) => ({ slug: job.slug }));
 }
 
@@ -19,7 +20,7 @@ export async function generateMetadata({
   params,
 }: JobPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const job = getJobBySlug(slug);
+  const job = await getJobBySlug(slug);
   if (!job) return { title: "Job not found" };
   return {
     title: `${job.title} in ${job.location}`,
@@ -29,9 +30,9 @@ export async function generateMetadata({
 
 export default async function JobDetailPage({ params }: JobPageProps) {
   const { slug } = await params;
-  const job = getJobBySlug(slug);
+  const job = await getJobBySlug(slug);
   if (!job) notFound();
-  const related = getRelatedJobs(job.slug);
+  const related = await getRelatedJobs(job.slug);
 
   return (
     <article className="container-page py-10 md:py-16">

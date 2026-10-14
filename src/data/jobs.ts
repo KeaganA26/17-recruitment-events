@@ -32,7 +32,7 @@ export type Job = {
   new: boolean;
 };
 
-export const jobs: Job[] = [
+export const sampleJobs: Job[] = [
   {
     id: "job-001",
     slug: "brand-ambassador-brighton",
@@ -431,16 +431,24 @@ export const jobs: Job[] = [
   },
 ];
 
-export function getJobBySlug(slug: string) {
+export async function getJobs() {
+  const { loadJobs } = await import("@/sanity/load-jobs");
+  return loadJobs();
+}
+
+export async function getJobBySlug(slug: string) {
+  const jobs = await getJobs();
   return jobs.find((job) => job.slug === slug);
 }
 
-export function getFeaturedJobs() {
+export async function getFeaturedJobs() {
+  const jobs = await getJobs();
   return jobs.filter((job) => job.featured).slice(0, 6);
 }
 
-export function getRelatedJobs(slug: string, limit = 3) {
-  const current = getJobBySlug(slug);
+export async function getRelatedJobs(slug: string, limit = 3) {
+  const jobs = await getJobs();
+  const current = jobs.find((job) => job.slug === slug);
   if (!current) return jobs.slice(0, limit);
   return jobs
     .filter((job) => job.slug !== slug && job.category === current.category)

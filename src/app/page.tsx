@@ -19,8 +19,8 @@ import { getFeaturedJobs } from "@/data/jobs";
 import { images, stats } from "@/data/site";
 import { cn } from "@/lib/utils";
 
-export default function HomePage() {
-  const featuredJobs = getFeaturedJobs();
+export default async function HomePage() {
+  const featuredJobs = await getFeaturedJobs();
 
   return (
     <>
