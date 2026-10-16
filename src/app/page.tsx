@@ -85,17 +85,23 @@ export default async function HomePage() {
           title="Connecting You With the Right People"
           description="Permanent and freelance roles across events, communications, content and marketing."
         />
-        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <div className="mt-10 grid items-start gap-6 lg:grid-cols-2">
           {roleGroups.map((group, index) => (
             <Reveal key={group.title} delay={index * 0.04}>
-              <article className="rounded-2xl border border-border bg-brand-paper p-6">
-                <h3 className="font-heading text-xl font-bold">{group.title}</h3>
-                <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+              <article className="rounded-3xl border border-border bg-white p-7 shadow-[0_16px_40px_-28px_rgba(1,26,62,0.45)] md:p-8">
+                <h3 className="font-heading text-xl font-bold text-brand-ink">
+                  {group.title}
+                </h3>
+                <ul className="mt-6 flex flex-col gap-2">
                   {group.roles.map((role) => (
                     <li
                       key={role}
-                      className="text-sm leading-6 text-muted-foreground"
+                      className="flex items-center gap-3 rounded-xl bg-brand-mist px-4 py-3 text-sm leading-snug text-brand-ink"
                     >
+                      <span
+                        className="size-1.5 shrink-0 rounded-full bg-brand-teal"
+                        aria-hidden="true"
+                      />
                       {role}
                     </li>
                   ))}

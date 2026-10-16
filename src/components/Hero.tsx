@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { HeroConfetti } from "@/components/HeroConfetti";
 import { buttonVariants } from "@/components/ui/button";
-import { images, site } from "@/data/site";
+import { site } from "@/data/site";
 import { cn } from "@/lib/utils";
 
 export function Hero() {
@@ -12,13 +13,14 @@ export function Hero() {
     <section className="relative isolate overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src={images.hero}
-          alt="Professional event staff working a live concert production"
+          src="/hero-bg.jpg"
+          alt="Confetti falling through a dark event space"
           fill
           priority
           className="object-cover object-center"
           sizes="100vw"
         />
+        <HeroConfetti />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/25" />
       </div>
 
