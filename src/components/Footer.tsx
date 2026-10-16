@@ -68,8 +68,7 @@ export function Footer() {
         <div className="lg:col-span-2">
           <Logo light />
           <p className="mt-5 max-w-sm text-sm leading-6 text-white/65">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            {site.description}
           </p>
           <div className="mt-6 flex items-center gap-3">
             <SocialLink href={site.social.instagram} label="Instagram">
@@ -94,7 +93,7 @@ export function Footer() {
 
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col gap-2 py-5 text-sm text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 17 Recruitment Events. All rights reserved.</p>
+          <p>© 2026 {site.name}. All rights reserved.</p>
           <p>London · Manchester · Birmingham · Edinburgh</p>
         </div>
       </div>

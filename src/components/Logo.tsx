@@ -14,7 +14,7 @@ export function Logo({
     <Link
       href="/"
       className={cn("inline-flex shrink-0 rounded-md", className)}
-      aria-label="17 Recruitment Events home"
+      aria-label="17 Recruitment home"
     >
       <Image
         src="/logo.png"

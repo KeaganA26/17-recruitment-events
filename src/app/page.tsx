@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
-import { CategoryCard } from "@/components/CategoryCard";
 import { CTASection } from "@/components/CTASection";
 import { Hero } from "@/components/Hero";
 import { JobCard } from "@/components/JobCard";
@@ -13,7 +12,7 @@ import {
   candidateBenefits,
   employerSolutions,
   howItWorks,
-  staffCategories,
+  roleGroups,
 } from "@/data/content";
 import { getFeaturedJobs } from "@/data/jobs";
 import { images, stats } from "@/data/site";
@@ -29,9 +28,9 @@ export default async function HomePage() {
       <section className="container-page py-20 md:py-24">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <SectionHeading
-            eyebrow="Lorem ipsum"
-            title="Lorem ipsum dolor sit amet"
-            description="Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            eyebrow="Find jobs"
+            title="Find Your Next Opportunity"
+            description="Explore the latest events and communications jobs, from permanent positions to freelance opportunities."
           />
           <Link
             href="/jobs"
@@ -82,14 +81,26 @@ export default async function HomePage() {
 
       <section className="container-page py-20 md:py-24">
         <SectionHeading
-          eyebrow="Lorem ipsum"
-          title="Lorem ipsum dolor sit amet"
-          description="Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi."
+          eyebrow="Roles we recruit"
+          title="Connecting You With the Right People"
+          description="Permanent and freelance roles across events, communications, content and marketing."
         />
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {staffCategories.map((category, index) => (
-            <Reveal key={category.title} delay={index * 0.03}>
-              <CategoryCard {...category} />
+        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+          {roleGroups.map((group, index) => (
+            <Reveal key={group.title} delay={index * 0.04}>
+              <article className="rounded-2xl border border-border bg-brand-paper p-6">
+                <h3 className="font-heading text-xl font-bold">{group.title}</h3>
+                <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {group.roles.map((role) => (
+                    <li
+                      key={role}
+                      className="text-sm leading-6 text-muted-foreground"
+                    >
+                      {role}
+                    </li>
+                  ))}
+                </ul>
+              </article>
             </Reveal>
           ))}
         </div>
@@ -138,9 +149,9 @@ export default async function HomePage() {
           <div className="p-8 md:p-12">
             <SectionHeading
               light
-              eyebrow="Lorem ipsum"
-              title="Lorem ipsum dolor sit amet"
-              description="Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+              eyebrow="For employers"
+              title="Find the Right Talent for Your Business"
+              description="Specialist recruitment for the events and communications industries. Permanent and freelance talent to help your team deliver, grow and succeed."
             />
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {employerSolutions.map((item) => (
@@ -154,13 +165,13 @@ export default async function HomePage() {
               ))}
             </div>
             <Link
-              href="/employers"
+              href="/contact"
               className={cn(
                 buttonVariants({ size: "xl" }),
                 "mt-8 bg-brand-coral text-white hover:bg-brand-coral/90"
               )}
             >
-              Request Staff
+              Get in touch with our team
             </Link>
           </div>
           <div className="relative min-h-72">

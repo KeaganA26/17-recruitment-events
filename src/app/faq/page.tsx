@@ -5,7 +5,7 @@ import { PageHero } from "@/components/PageHero";
 export const metadata: Metadata = {
   title: "Frequently Asked Questions",
   description:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+    "Answers to common questions about hiring and finding roles with 17 Recruitment.",
 };
 
 export default function FAQPage() {
@@ -14,7 +14,7 @@ export default function FAQPage() {
       <PageHero
         eyebrow="Help"
         title="Frequently Asked Questions"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
+        description="How we work with businesses and candidates across the events and communications industries."
       />
       <section className="container-page max-w-4xl py-12 md:py-16">
         <FAQ />

@@ -42,8 +42,8 @@ export default function ContactPage() {
     <>
       <PageHero
         eyebrow="Contact"
-        title="Lorem ipsum dolor sit amet"
-        description="Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        title="Contact Us"
+        description="Tell us what you need. Whether you're hiring or looking for your next opportunity, we'd love to hear from you."
       />
       <section className="container-page grid gap-10 py-12 lg:grid-cols-[0.9fr_1.1fr] lg:py-16">
         <div className="grid gap-4">
@@ -73,8 +73,8 @@ export default function ContactPage() {
             );
           })}
           <p className="text-sm text-muted-foreground">
-            Contact details are placeholders for this customer demo and can be
-            updated before launch.
+            Phone and WhatsApp numbers are being confirmed and will be updated
+            shortly.
           </p>
         </div>
         <div className="rounded-2xl border border-border bg-brand-paper p-5 shadow-sm md:p-8">

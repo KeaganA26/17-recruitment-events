@@ -30,7 +30,7 @@ export function Hero() {
             transition={{ duration: 0.4 }}
             className="mb-4 text-xs font-semibold tracking-[0.22em] text-brand-gold uppercase"
           >
-            Lorem · Ipsum · Dolor
+            Events & Communications
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
@@ -64,13 +64,13 @@ export function Hero() {
               Browse Open Jobs
             </Link>
             <Link
-              href="/join"
+              href="/contact"
               className={cn(
                 buttonVariants({ size: "xl", variant: "outline" }),
                 "w-full border-white/30 bg-white/10 text-white hover:bg-white/20 sm:w-auto"
               )}
             >
-              Join Our Talent Pool
+              Get in touch
             </Link>
           </motion.div>
         </div>
@@ -82,13 +82,13 @@ export function Hero() {
           className="absolute right-5 bottom-8 hidden max-w-xs rounded-2xl border border-white/15 bg-white/10 p-4 text-white shadow-lg backdrop-blur-md md:right-8 md:block"
         >
           <p className="text-xs font-semibold tracking-[0.16em] text-brand-gold uppercase">
-            Lorem ipsum
+            Permanent & freelance
           </p>
           <p className="mt-2 font-heading text-lg font-bold">
-            Dolor sit amet consectetur
+            The right connections
           </p>
           <p className="mt-1 text-sm text-white/70">
-            Lorem · Ipsum · Dolor
+            People, relationships and industry expertise
           </p>
         </motion.aside>
       </div>

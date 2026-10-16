@@ -12,12 +12,12 @@ type CTASectionProps = {
 };
 
 export function CTASection({
-  title = "Lorem ipsum dolor sit amet?",
-  description = "Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  title = "The right connections make all the difference.",
+  description = "Looking for your next opportunity, or the person who could make all the difference to your business? We'd love to hear from you.",
   primaryHref = "/jobs",
-  primaryLabel = "Browse Jobs",
-  secondaryHref = "/join",
-  secondaryLabel = "Join Our Talent Pool",
+  primaryLabel = "Find Jobs",
+  secondaryHref = "/contact",
+  secondaryLabel = "Get in touch with our team",
 }: CTASectionProps) {
   return (
     <section className="bg-brand-coral">

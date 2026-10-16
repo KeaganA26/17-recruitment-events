@@ -1,11 +1,11 @@
 export const site = {
-  name: "17 Recruitment Events",
+  name: "17 Recruitment",
   shortName: "17",
-  tagline: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  tagline: "Events & Communications Recruitment Specialists",
   description:
-    "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    "Connecting exceptional talent with leading businesses across the events and communications industries. We specialise in permanent and freelance recruitment, matching talented professionals with opportunities and helping businesses build outstanding teams.",
   url: "https://17recruitmentevents.co.uk",
-  email: "hello@17recruitmentevents.co.uk",
+  email: "hello@17recruitment.com",
   phone: "+44 20 7946 1717",
   phoneHref: "tel:+442079461717",
   whatsapp: "+44 7700 900171",
@@ -81,10 +81,10 @@ export const availabilityOptions = [
 
 export const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/jobs", label: "Find Jobs" },
-  { href: "/team", label: "Meet the Team" },
-  { href: "/employers", label: "For Employers" },
   { href: "/about", label: "About" },
+  { href: "/team", label: "Meet the Team" },
+  { href: "/jobs", label: "Find Jobs" },
+  { href: "/employers", label: "For Employers" },
   { href: "/contact", label: "Contact" },
 ] as const;
 

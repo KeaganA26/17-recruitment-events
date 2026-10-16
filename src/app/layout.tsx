@@ -17,8 +17,8 @@ const sora = Sora({
 
 export const metadata: Metadata = {
   title: {
-    default: "Event Jobs in the UK | 17 Recruitment Events",
-    template: "%s | 17 Recruitment Events",
+    default: "Events & Communications Recruitment | 17 Recruitment",
+    template: "%s | 17 Recruitment",
   },
   description: site.description,
   metadataBase: new URL(site.url),
