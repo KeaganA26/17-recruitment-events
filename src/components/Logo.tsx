@@ -14,18 +14,15 @@ export function Logo({
     <Link
       href="/"
       className={cn("inline-flex shrink-0 rounded-md", className)}
-      aria-label="Seventeen Recruitment home"
+      aria-label="17 Recruitment Events home"
     >
       <Image
         src="/logo.png"
-        alt="Seventeen Recruitment"
-        width={777}
-        height={225}
+        alt="17 Recruitment — Events & Communications"
+        width={1090}
+        height={642}
         priority
-        className={cn(
-          "h-9 w-auto rounded-md sm:h-10",
-          compact && "h-8 sm:h-9"
-        )}
+        className={cn("h-14 w-auto sm:h-16", compact && "h-12 sm:h-14")}
       />
     </Link>
   );
