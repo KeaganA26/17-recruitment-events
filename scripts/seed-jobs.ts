@@ -1,5 +1,6 @@
 import { getCliClient } from "sanity/cli";
 import { sampleJobs } from "../src/data/jobs";
+import { defaultJobTypeDocuments, jobTypeReference } from "./job-types";
 
 const client = getCliClient({ apiVersion: "2026-10-14" });
 
@@ -11,7 +12,7 @@ const documents = sampleJobs.map((job) => ({
   location: job.location,
   region: job.region,
   category: job.category,
-  type: job.type,
+  type: jobTypeReference(job.type),
   rate: job.rate,
   date: job.date,
   description: job.description,
@@ -24,6 +25,9 @@ const documents = sampleJobs.map((job) => ({
 }));
 
 const transaction = client.transaction();
+for (const document of defaultJobTypeDocuments()) {
+  transaction.createIfNotExists(document);
+}
 for (const document of documents) {
   transaction.createOrReplace(document);
 }

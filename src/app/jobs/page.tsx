@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { JobsExplorer } from "@/components/JobsExplorer";
 import { PageHero } from "@/components/PageHero";
-import { getJobs } from "@/data/jobs";
+import { getJobTypes, getJobs } from "@/data/jobs";
 
 export const metadata: Metadata = {
   title: "Find Jobs",
@@ -16,7 +16,7 @@ const intro = [
 ];
 
 export default async function JobsPage() {
-  const jobs = await getJobs();
+  const [jobs, jobTypes] = await Promise.all([getJobs(), getJobTypes()]);
 
   return (
     <>
@@ -33,7 +33,7 @@ export default async function JobsPage() {
         </div>
       </section>
       <section className="container-page py-12 md:py-16">
-        <JobsExplorer jobs={jobs} />
+        <JobsExplorer jobs={jobs} jobTypes={jobTypes} />
       </section>
     </>
   );

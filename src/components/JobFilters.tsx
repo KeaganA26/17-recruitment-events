@@ -2,7 +2,7 @@
 
 import type { ComponentProps, ReactNode } from "react";
 import { Search, X } from "lucide-react";
-import { jobCategories, jobTypes, regions } from "@/data/site";
+import { jobCategories, regions } from "@/data/site";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,9 +18,10 @@ type JobFiltersProps = {
   value: JobFilterState;
   onChange: (next: JobFilterState) => void;
   resultCount: number;
+  jobTypes: readonly string[];
 };
 
-export function JobFilters({ value, onChange, resultCount }: JobFiltersProps) {
+export function JobFilters({ value, onChange, resultCount, jobTypes }: JobFiltersProps) {
   const update = (key: keyof JobFilterState, next: string) => {
     onChange({ ...value, [key]: next });
   };

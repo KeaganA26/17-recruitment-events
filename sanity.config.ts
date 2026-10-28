@@ -11,6 +11,16 @@ export default defineConfig({
   basePath: "/studio",
   projectId: projectId || "missing-project-id",
   dataset,
-  plugins: [structureTool()],
+  plugins: [
+    structureTool({
+      structure: (S) =>
+        S.list()
+          .title("Content")
+          .items([
+            S.documentTypeListItem("job").title("Jobs"),
+            S.documentTypeListItem("jobType").title("Job types"),
+          ]),
+    }),
+  ],
   schema: { types: schemaTypes },
 });

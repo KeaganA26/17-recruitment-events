@@ -11,7 +11,7 @@ const jobsQuery = `*[_type == "job" && defined(slug.current) && defined(region)]
   location,
   region,
   category,
-  type,
+  "type": coalesce(type->title, type),
   rate,
   date,
   description,
@@ -31,7 +31,7 @@ function toJob(job: SanityJob): Job {
     location: job.location,
     region: job.region,
     category: job.category,
-    type: job.type,
+    type: typeof job.type === "string" ? job.type : "",
     rate: job.rate,
     date: job.date,
     description: job.description,
@@ -49,6 +49,17 @@ export const loadJobs = unstable_cache(
     const jobs = await client.fetch<SanityJob[]>(jobsQuery);
     return jobs.map(toJob);
   },
-  ["jobs"],
+  ["jobs", "public-type"],
   { tags: ["jobs"] },
+);
+
+const jobTypesQuery = `*[_type == "jobType" && defined(title)] | order(coalesce(sortOrder, 100) asc, title asc).title`;
+
+export const loadJobTypes = unstable_cache(
+  async () => {
+    const types = await client.fetch<Array<string | null>>(jobTypesQuery);
+    return types.filter((type): type is string => Boolean(type));
+  },
+  ["job-types", "public-ids"],
+  { tags: ["job-types"] },
 );

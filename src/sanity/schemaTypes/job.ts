@@ -1,5 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { jobCategories, jobTypes, regions } from "@/data/site";
+import { jobCategories, regions } from "@/data/site";
 
 const list = (values: readonly string[]) =>
   values.map((value) => ({ title: value, value }));
@@ -46,8 +46,9 @@ export const job = defineType({
     defineField({
       name: "type",
       title: "Job type",
-      type: "string",
-      options: { list: list(jobTypes), layout: "dropdown" },
+      type: "reference",
+      to: [{ type: "jobType" }],
+      description: "Pick an existing job type, or create a new one from this field.",
       validation: (rule) => rule.required(),
     }),
     defineField({

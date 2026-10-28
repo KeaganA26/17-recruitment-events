@@ -5,14 +5,6 @@ export type JobCategory =
   | "Brand Activations"
   | "Corporate Events";
 
-export type JobType =
-  | "Event / Casual"
-  | "Temporary"
-  | "Campaign"
-  | "Event"
-  | "Contract"
-  | "Casual";
-
 export type Job = {
   id: string;
   slug: string;
@@ -20,7 +12,7 @@ export type Job = {
   location: string;
   region: string;
   category: JobCategory;
-  type: JobType;
+  type: string;
   rate: string;
   date: string;
   description: string;
@@ -434,6 +426,13 @@ export const sampleJobs: Job[] = [
 export async function getJobs() {
   const { loadJobs } = await import("@/sanity/load-jobs");
   return loadJobs();
+}
+
+export async function getJobTypes() {
+  const { loadJobTypes } = await import("@/sanity/load-jobs");
+  const { jobTypes } = await import("@/data/site");
+  const types = await loadJobTypes();
+  return types.length > 0 ? types : [...jobTypes];
 }
 
 export async function getJobBySlug(slug: string) {

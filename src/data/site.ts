@@ -56,6 +56,7 @@ export const jobTypes = [
   "Event",
   "Contract",
   "Casual",
+  "Freelance",
 ] as const;
 
 export const preferredRoles = [

@@ -17,13 +17,19 @@ export async function POST(request: NextRequest) {
   if (!isValidSignature) {
     return NextResponse.json({ message: "Invalid signature" }, { status: 401 });
   }
-  if (body?._type !== "job") {
+  if (body?._type !== "job" && body?._type !== "jobType") {
     return NextResponse.json({ revalidated: false });
   }
 
   revalidateTag("jobs", { expire: 0 });
+  revalidateTag("job-types", { expire: 0 });
   revalidatePath("/");
   revalidatePath("/jobs");
+
+  if (body._type === "jobType") {
+    revalidatePath("/jobs", "layout");
+    return NextResponse.json({ revalidated: true });
+  }
 
   const slug = typeof body.slug === "string" ? body.slug : body.slug?.current;
   if (slug) revalidatePath(`/jobs/${slug}`);

@@ -12,7 +12,13 @@ const emptyFilters: JobFilterState = {
   type: "",
 };
 
-export function JobsExplorer({ jobs }: { jobs: Job[] }) {
+export function JobsExplorer({
+  jobs,
+  jobTypes,
+}: {
+  jobs: Job[];
+  jobTypes: readonly string[];
+}) {
   const [filters, setFilters] = useState<JobFilterState>(emptyFilters);
 
   const results = useMemo(() => {
@@ -32,7 +38,12 @@ export function JobsExplorer({ jobs }: { jobs: Job[] }) {
 
   return (
     <div className="space-y-8">
-      <JobFilters value={filters} onChange={setFilters} resultCount={results.length} />
+      <JobFilters
+        value={filters}
+        onChange={setFilters}
+        resultCount={results.length}
+        jobTypes={jobTypes}
+      />
       {results.length > 0 ? (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {results.map((job) => (
