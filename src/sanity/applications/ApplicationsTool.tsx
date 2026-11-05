@@ -1,7 +1,7 @@
 "use client";
 
-import { Box, Button, Card, Checkbox, Flex, Spinner, Stack, Text } from "@sanity/ui";
-import { useCallback, useEffect, useState } from "react";
+import { Box, Button, Card, Checkbox, Flex, Select, Spinner, Stack, Text, TextInput } from "@sanity/ui";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { definePlugin, useClient } from "sanity";
 import { apiVersion } from "@/sanity/env";
 
@@ -26,6 +26,45 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
   minute: "2-digit",
 });
 
+type SortOrder = "newest" | "oldest" | "name" | "name-desc" | "job";
+
+function matchesSearch(application: ApplicationSummary, query: string) {
+  if (!query) return true;
+  const haystack = [
+    application.firstName,
+    application.lastName,
+    application.email,
+    application.mobile,
+    application.city,
+    application.region,
+    application.jobTitle,
+    application.message,
+  ]
+    .join(" ")
+    .toLowerCase();
+  return haystack.includes(query);
+}
+
+function compareApplications(order: SortOrder) {
+  return (left: ApplicationSummary, right: ApplicationSummary) => {
+    if (order === "oldest") {
+      return left.createdAt.localeCompare(right.createdAt);
+    }
+    if (order === "name" || order === "name-desc") {
+      const byName = `${left.firstName} ${left.lastName}`.localeCompare(
+        `${right.firstName} ${right.lastName}`,
+        "en",
+        { sensitivity: "base" },
+      );
+      return order === "name" ? byName : -byName;
+    }
+    if (order === "job") {
+      return left.jobTitle.localeCompare(right.jobTitle, "en", { sensitivity: "base" });
+    }
+    return right.createdAt.localeCompare(left.createdAt);
+  };
+}
+
 function ApplicationsTool() {
   const client = useClient({ apiVersion });
   const token = client.config().token;
@@ -34,6 +73,10 @@ function ApplicationsTool() {
   const [error, setError] = useState("");
   const [downloadingId, setDownloadingId] = useState("");
   const [downloadingSelected, setDownloadingSelected] = useState(false);
+  const [query, setQuery] = useState("");
+  const [role, setRole] = useState("");
+  const [region, setRegion] = useState("");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
 
   const loadApplications = useCallback(async () => {
     if (!token) {
@@ -77,10 +120,33 @@ function ApplicationsTool() {
     );
   }
 
+  const roles = useMemo(
+    () => [...new Set(applications?.map((application) => application.jobTitle) ?? [])].sort(),
+    [applications],
+  );
+  const regions = useMemo(
+    () => [...new Set(applications?.map((application) => application.region) ?? [])].sort(),
+    [applications],
+  );
+  const visibleApplications = useMemo(() => {
+    const search = query.trim().toLowerCase();
+    return (applications ?? [])
+      .filter((application) => {
+        if (role && application.jobTitle !== role) return false;
+        if (region && application.region !== region) return false;
+        return matchesSearch(application, search);
+      })
+      .sort(compareApplications(sortOrder));
+  }, [applications, query, region, role, sortOrder]);
+
   function toggleAll() {
-    if (!applications) return;
-    const everySelected = applications.every((application) => selectedIds.includes(application.id));
-    setSelectedIds(everySelected ? [] : applications.map((application) => application.id));
+    const visibleIds = visibleApplications.map((application) => application.id);
+    const everySelected = visibleIds.every((id) => selectedIds.includes(id));
+    setSelectedIds((current) =>
+      everySelected
+        ? current.filter((id) => !visibleIds.includes(id))
+        : [...new Set([...current, ...visibleIds])],
+    );
   }
 
   async function saveDownload(response: Response, fallbackName: string) {
@@ -164,20 +230,76 @@ function ApplicationsTool() {
         {applications === null && !error ? <Spinner muted /> : null}
         {applications?.length === 0 ? <Text size={1}>No applications yet.</Text> : null}
         {applications && applications.length > 0 ? (
+          <Stack gap={3}>
+            <TextInput
+              value={query}
+              onChange={(event) => setQuery(event.currentTarget.value)}
+              placeholder="Search name, email, city, or role"
+              aria-label="Search applications"
+            />
+            <Flex align="center" gap={3} style={{ flexWrap: "wrap" }}>
+              <Select
+                value={role}
+                onChange={(event) => setRole(event.currentTarget.value)}
+                aria-label="Filter by role"
+              >
+                <option value="">All roles</option>
+                {roles.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </Select>
+              <Select
+                value={region}
+                onChange={(event) => setRegion(event.currentTarget.value)}
+                aria-label="Filter by region"
+              >
+                <option value="">All regions</option>
+                {regions.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </Select>
+              <Select
+                value={sortOrder}
+                onChange={(event) => setSortOrder(event.currentTarget.value as SortOrder)}
+                aria-label="Sort applications"
+              >
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="name">Name A–Z</option>
+                <option value="name-desc">Name Z–A</option>
+                <option value="job">Role A–Z</option>
+              </Select>
+            </Flex>
+          </Stack>
+        ) : null}
+        {applications && applications.length > 0 ? (
           <Flex align="center" gap={3}>
             <Checkbox
-              checked={applications.every((application) => selectedIds.includes(application.id))}
+              checked={
+                visibleApplications.length > 0 &&
+                visibleApplications.every((application) => selectedIds.includes(application.id))
+              }
               indeterminate={
-                selectedIds.length > 0 &&
-                !applications.every((application) => selectedIds.includes(application.id))
+                visibleApplications.some((application) => selectedIds.includes(application.id)) &&
+                !visibleApplications.every((application) => selectedIds.includes(application.id))
               }
               onChange={toggleAll}
-              aria-label="Select all applications"
+              aria-label="Select shown applications"
+              disabled={visibleApplications.length === 0}
             />
-            <Text size={1}>Select all</Text>
+            <Text size={1}>
+              {visibleApplications.length === applications.length ? "Select all" : "Select shown"}
+            </Text>
           </Flex>
         ) : null}
-        {applications?.map((application) => (
+        {applications && applications.length > 0 && visibleApplications.length === 0 ? (
+          <Text size={1}>No applications match.</Text>
+        ) : null}
+        {visibleApplications.map((application) => (
           <Card key={application.id} padding={4} radius={2} shadow={1}>
             <Stack gap={4}>
               <Flex align="flex-start" gap={3}>
