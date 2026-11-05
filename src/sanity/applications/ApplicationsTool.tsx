@@ -2,8 +2,8 @@
 
 import { Box, Button, Card, Checkbox, Flex, Select, Spinner, Stack, Text, TextInput } from "@sanity/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { definePlugin, useClient } from "sanity";
-import { apiVersion } from "@/sanity/env";
+import { definePlugin, useClient, type SanityClient } from "sanity";
+import { apiVersion, projectId } from "@/sanity/env";
 
 type ApplicationSummary = {
   id: string;
@@ -65,9 +65,34 @@ function compareApplications(order: SortOrder) {
   };
 }
 
+function storedStudioToken() {
+  if (!projectId) return "";
+  try {
+    const raw = window.localStorage.getItem(`__studio_auth_token_${projectId}`);
+    if (!raw) return "";
+    const parsed = JSON.parse(raw) as { token?: unknown };
+    return typeof parsed.token === "string" ? parsed.token : "";
+  } catch {
+    return "";
+  }
+}
+
+async function reviewHeaders(client: SanityClient): Promise<HeadersInit | null> {
+  const token = client.config().token || storedStudioToken();
+  if (token) return { Authorization: `Bearer ${token}` };
+
+  try {
+    const user = await client.withConfig({ withCredentials: true }).request<{ id?: string }>({
+      url: "/users/me",
+    });
+    return user?.id ? { "X-Sanity-User-Id": user.id } : null;
+  } catch {
+    return null;
+  }
+}
+
 function ApplicationsTool() {
   const client = useClient({ apiVersion });
-  const token = client.config().token;
   const [applications, setApplications] = useState<ApplicationSummary[] | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [error, setError] = useState("");
@@ -79,7 +104,8 @@ function ApplicationsTool() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
 
   const loadApplications = useCallback(async () => {
-    if (!token) {
+    const headers = await reviewHeaders(client);
+    if (!headers) {
       setApplications(null);
       setError("Sign in to Sanity to review applications.");
       return;
@@ -87,7 +113,7 @@ function ApplicationsTool() {
 
     setError("");
     const response = await fetch("/api/applications", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers,
       cache: "no-store",
     });
     const body = (await response.json()) as {
@@ -103,7 +129,7 @@ function ApplicationsTool() {
     setSelectedIds((current) =>
       current.filter((id) => body.applications?.some((application) => application.id === id)),
     );
-  }, [token]);
+  }, [client]);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -161,14 +187,15 @@ function ApplicationsTool() {
   }
 
   async function downloadSelected() {
-    if (!token || selectedIds.length === 0) return;
+    const headers = await reviewHeaders(client);
+    if (!headers || selectedIds.length === 0) return;
     setDownloadingSelected(true);
     setError("");
     try {
       const response = await fetch("/api/applications/download", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          ...headers,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ ids: selectedIds }),
@@ -187,12 +214,13 @@ function ApplicationsTool() {
   }
 
   async function downloadCv(application: ApplicationSummary) {
-    if (!token) return;
+    const headers = await reviewHeaders(client);
+    if (!headers) return;
     setDownloadingId(application.id);
     setError("");
     try {
       const response = await fetch(`/api/applications/${application.id}/cv`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers,
       });
       if (!response.ok) {
         const body = (await response.json().catch(() => null)) as { error?: string } | null;
