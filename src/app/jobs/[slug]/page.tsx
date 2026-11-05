@@ -98,10 +98,10 @@ export default async function JobDetailPage({ params }: JobPageProps) {
           <p className="font-heading mt-2 text-2xl font-bold">{job.rate}</p>
           <p className="mt-1 text-sm text-muted-foreground">{job.location}</p>
           <div className="mt-6">
-            <ApplyDialog jobTitle={job.title} />
+            <ApplyDialog jobTitle={job.title} jobSlug={job.slug} />
           </div>
           <p className="mt-4 text-xs leading-5 text-muted-foreground">
-            Applications are simulated in this demo. No CV is stored or emailed.
+            Your CV is stored privately with your application.
           </p>
         </aside>
       </div>

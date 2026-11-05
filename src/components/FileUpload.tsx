@@ -39,7 +39,7 @@ export function FileUpload({
           Tap to attach your CV
         </span>
         <span className="mt-1 text-xs text-muted-foreground">
-          PDF or Word, max 5MB. Files stay on this device for the demo.
+          PDF or Word, max 5MB.
         </span>
         <input
           id={id}

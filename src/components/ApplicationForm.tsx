@@ -13,6 +13,7 @@ import { isValidEmail, isValidPhone, required } from "@/lib/validation";
 
 type ApplicationFormProps = {
   jobTitle: string;
+  jobSlug: string;
 };
 
 type FormState = {
@@ -35,7 +36,7 @@ const emptyForm: FormState = {
   message: "",
 };
 
-export function ApplicationForm({ jobTitle }: ApplicationFormProps) {
+export function ApplicationForm({ jobTitle, jobSlug }: ApplicationFormProps) {
   const [form, setForm] = useState(emptyForm);
   const [cv, setCv] = useState<File | null>(null);
   const [consent, setConsent] = useState(false);
@@ -64,10 +65,41 @@ export function ApplicationForm({ jobTitle }: ApplicationFormProps) {
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!validate()) return;
+    if (!validate() || !cv) return;
     setStatus("loading");
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    setStatus("success");
+    setErrors({});
+
+    const body = new FormData();
+    body.set("jobSlug", jobSlug);
+    body.set("firstName", form.firstName);
+    body.set("lastName", form.lastName);
+    body.set("email", form.email);
+    body.set("mobile", form.mobile);
+    body.set("city", form.city);
+    body.set("region", form.region);
+    body.set("message", form.message);
+    body.set("consent", "true");
+    body.set("cv", cv);
+
+    try {
+      const response = await fetch("/api/applications", { method: "POST", body });
+      const data = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        fieldErrors?: Record<string, string>;
+      };
+      if (!response.ok) {
+        setErrors({
+          ...(data.fieldErrors ?? {}),
+          form: data.error ?? "The application could not be saved. Try again.",
+        });
+        setStatus("idle");
+        return;
+      }
+      setStatus("success");
+    } catch {
+      setErrors({ form: "The application could not be saved. Try again." });
+      setStatus("idle");
+    }
   };
 
   if (status === "success") {
@@ -176,6 +208,7 @@ export function ApplicationForm({ jobTitle }: ApplicationFormProps) {
           <p className="text-sm text-destructive">{errors.consent}</p>
         ) : null}
       </div>
+      {errors.form ? <p className="text-sm text-destructive">{errors.form}</p> : null}
       <Button
         type="submit"
         size="xl"

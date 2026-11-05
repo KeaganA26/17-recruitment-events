@@ -2,6 +2,7 @@
 
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
+import { applicationsTool } from "@/sanity/applications/ApplicationsTool";
 import { dataset, projectId } from "@/sanity/env";
 import { schemaTypes } from "@/sanity/schemaTypes";
 
@@ -12,6 +13,7 @@ export default defineConfig({
   projectId: projectId || "missing-project-id",
   dataset,
   plugins: [
+    applicationsTool(),
     structureTool({
       structure: (S) =>
         S.list()

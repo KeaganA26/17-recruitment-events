@@ -32,9 +32,8 @@ export default function PrivacyPage() {
           </h2>
           <p className="mt-3">
             Your CV may include employment history, education and contact
-            details. In this demo, files are not uploaded or stored. In
-            production, CV files would be used only to assess suitability for
-            event and hospitality placements.
+            details. The file is stored privately and used only to assess
+            suitability for event and hospitality placements.
           </p>
         </section>
         <section>

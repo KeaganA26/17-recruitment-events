@@ -11,7 +11,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export function ApplyDialog({ jobTitle }: { jobTitle: string }) {
+export function ApplyDialog({
+  jobTitle,
+  jobSlug,
+}: {
+  jobTitle: string;
+  jobSlug: string;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -30,10 +36,10 @@ export function ApplyDialog({ jobTitle }: { jobTitle: string }) {
               Apply Now
             </DialogTitle>
             <DialogDescription>
-              Complete the form below. Your CV is not uploaded in this demo.
+              Complete the form and attach your CV.
             </DialogDescription>
           </DialogHeader>
-          <ApplicationForm jobTitle={jobTitle} />
+          <ApplicationForm jobTitle={jobTitle} jobSlug={jobSlug} />
         </DialogContent>
       </Dialog>
     </>
