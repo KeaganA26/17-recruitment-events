@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
+import { TurnstileField, type TurnstileHandle } from "@/components/TurnstileField";
 import { Loader2 } from "lucide-react";
 import { FileUpload } from "@/components/FileUpload";
 import { SelectField, TextAreaField, TextField } from "@/components/FormField";
@@ -42,6 +43,8 @@ export function ApplicationForm({ jobTitle, jobSlug }: ApplicationFormProps) {
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstile = useRef<TurnstileHandle>(null);
 
   const update = (key: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -66,6 +69,10 @@ export function ApplicationForm({ jobTitle, jobSlug }: ApplicationFormProps) {
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (!validate() || !cv) return;
+    if (!turnstileToken) {
+      setErrors({ form: "Confirm you are not a robot and try again." });
+      return;
+    }
     setStatus("loading");
     setErrors({});
 
@@ -80,6 +87,7 @@ export function ApplicationForm({ jobTitle, jobSlug }: ApplicationFormProps) {
     body.set("message", form.message);
     body.set("consent", "true");
     body.set("cv", cv);
+    body.set("turnstileToken", turnstileToken);
 
     try {
       const response = await fetch("/api/applications", { method: "POST", body });
@@ -93,12 +101,14 @@ export function ApplicationForm({ jobTitle, jobSlug }: ApplicationFormProps) {
           form: data.error ?? "The application could not be saved. Try again.",
         });
         setStatus("idle");
+        turnstile.current?.reset();
         return;
       }
       setStatus("success");
     } catch {
       setErrors({ form: "The application could not be saved. Try again." });
       setStatus("idle");
+      turnstile.current?.reset();
     }
   };
 
@@ -208,11 +218,12 @@ export function ApplicationForm({ jobTitle, jobSlug }: ApplicationFormProps) {
           <p className="text-sm text-destructive">{errors.consent}</p>
         ) : null}
       </div>
+      <TurnstileField ref={turnstile} action="apply" onToken={setTurnstileToken} />
       {errors.form ? <p className="text-sm text-destructive">{errors.form}</p> : null}
       <Button
         type="submit"
         size="xl"
-        disabled={status === "loading"}
+        disabled={status === "loading" || !turnstileToken}
         className="w-full bg-brand-coral text-white hover:bg-brand-coral/90"
       >
         {status === "loading" ? (

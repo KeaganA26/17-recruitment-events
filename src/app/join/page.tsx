@@ -31,8 +31,8 @@ export default function JoinPage() {
             <li>Event crew and supervisors</li>
           </ul>
           <p className="mt-6 text-sm leading-6 text-muted-foreground">
-            Your details stay on this device in the demo. When the backend is
-            connected, registrations will go to the 17 recruitment team.
+            Your registration is sent to the recruitment team. A CV stays private
+            and is only available to staff reviewing applications.
           </p>
         </div>
         <div className="rounded-2xl border border-border bg-brand-paper p-5 shadow-sm md:p-8">

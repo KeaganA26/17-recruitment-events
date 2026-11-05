@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
+import { TurnstileField, type TurnstileHandle } from "@/components/TurnstileField";
 import { Loader2 } from "lucide-react";
 import { SelectField, TextAreaField, TextField } from "@/components/FormField";
 import { SuccessMessage } from "@/components/SuccessMessage";
@@ -36,6 +37,8 @@ export function EmployerForm() {
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstile = useRef<TurnstileHandle>(null);
 
   const update = (key: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -61,9 +64,45 @@ export function EmployerForm() {
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (!validate()) return;
+    if (!turnstileToken) {
+      setErrors({ form: "Confirm you are not a robot and try again." });
+      return;
+    }
     setStatus("loading");
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    setStatus("success");
+
+    const body = new FormData();
+    body.set("company", form.company);
+    body.set("contact", form.contact);
+    body.set("email", form.email);
+    body.set("phone", form.phone);
+    body.set("eventDate", form.eventDate);
+    body.set("location", form.location);
+    body.set("staffCount", form.staffCount);
+    body.set("staffType", form.staffType);
+    body.set("message", form.message);
+    body.set("turnstileToken", turnstileToken);
+
+    try {
+      const response = await fetch("/api/employers", { method: "POST", body });
+      const data = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        fieldErrors?: Record<string, string>;
+      };
+      if (!response.ok) {
+        setErrors({
+          ...(data.fieldErrors ?? {}),
+          form: data.error ?? "The form could not be saved. Try again.",
+        });
+        setStatus("idle");
+        turnstile.current?.reset();
+        return;
+      }
+      setStatus("success");
+    } catch {
+      setErrors({ form: "The form could not be saved. Try again." });
+      setStatus("idle");
+      turnstile.current?.reset();
+    }
   };
 
   if (status === "success") {
@@ -177,10 +216,12 @@ export function EmployerForm() {
         error={errors.message}
         placeholder="Tell us about the event, dress code, call time and any special requirements."
       />
+      <TurnstileField ref={turnstile} action="employer" onToken={setTurnstileToken} />
+      {errors.form ? <p className="text-sm text-destructive">{errors.form}</p> : null}
       <Button
         type="submit"
         size="xl"
-        disabled={status === "loading"}
+        disabled={status === "loading" || !turnstileToken}
         className="w-full bg-brand-coral text-white hover:bg-brand-coral/90"
       >
         {status === "loading" ? (

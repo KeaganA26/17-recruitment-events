@@ -1,60 +1,21 @@
-import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getJobBySlug } from "@/data/jobs";
 import { regions } from "@/data/site";
+import { cvFieldError, uploadPrivateCv } from "@/lib/cv-upload";
 import { insertApplication, listApplications } from "@/lib/db";
-import { createR2Client } from "@/lib/r2";
+import { notifyStaff } from "@/lib/notify-staff";
 import { hasProjectAccess } from "@/lib/studio-auth";
+import { hasValidTurnstile } from "@/lib/turnstile";
 import { isValidEmail, isValidPhone, required } from "@/lib/validation";
 
 export const runtime = "nodejs";
 
-const MAX_CV_BYTES = 5 * 1024 * 1024;
 const MAX_MESSAGE_LENGTH = 2000;
-
-type CvExtension = "pdf" | "doc" | "docx";
-
-const extensionByType: Record<string, CvExtension> = {
-  "application/pdf": "pdf",
-  "application/msword": "doc",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-    "docx",
-};
 
 function text(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
-}
-
-function extensionFromName(name: string): CvExtension | null {
-  const lower = name.toLowerCase();
-  if (lower.endsWith(".pdf")) return "pdf";
-  if (lower.endsWith(".docx")) return "docx";
-  if (lower.endsWith(".doc")) return "doc";
-  return null;
-}
-
-function looksLikeCv(bytes: Uint8Array, extension: CvExtension) {
-  if (extension === "pdf") {
-    return (
-      bytes.length > 4 &&
-      bytes[0] === 0x25 &&
-      bytes[1] === 0x50 &&
-      bytes[2] === 0x44 &&
-      bytes[3] === 0x46
-    );
-  }
-  if (extension === "docx") {
-    return bytes.length > 4 && bytes[0] === 0x50 && bytes[1] === 0x4b;
-  }
-  return (
-    bytes.length > 8 &&
-    bytes[0] === 0xd0 &&
-    bytes[1] === 0xcf &&
-    bytes[2] === 0x11 &&
-    bytes[3] === 0xe0
-  );
 }
 
 export async function GET(request: Request) {
@@ -103,7 +64,15 @@ export async function POST(request: Request) {
   const jobSlug = text(formData, "jobSlug");
   const consent = text(formData, "consent") === "true";
   const cv = formData.get("cv");
+  const turnstileToken = text(formData, "turnstileToken");
   const fieldErrors: Record<string, string> = {};
+
+  if (!(await hasValidTurnstile(request, turnstileToken, "apply"))) {
+    return NextResponse.json(
+      { error: "Confirm you are not a robot and try again." },
+      { status: 403 },
+    );
+  }
 
   if (!required(fields.firstName)) fieldErrors.firstName = "Enter your first name.";
   if (!required(fields.lastName)) fieldErrors.lastName = "Enter your last name.";
@@ -120,18 +89,8 @@ export async function POST(request: Request) {
   }
   if (!consent) fieldErrors.consent = "Consent is required to submit your application.";
 
-  const file = cv instanceof File && cv.size > 0 ? cv : null;
-  const extension = file
-    ? extensionFromName(file.name) ?? extensionByType[file.type] ?? null
-    : null;
-  const typedExtension = file ? extensionByType[file.type] : undefined;
-  if (!file || !extension) {
-    fieldErrors.cv = "Attach a PDF or Word CV.";
-  } else if (typedExtension && typedExtension !== extension) {
-    fieldErrors.cv = "Attach a PDF or Word CV.";
-  } else if (file.size > MAX_CV_BYTES) {
-    fieldErrors.cv = "CV must be 5MB or smaller.";
-  }
+  const cvError = cvFieldError(cv);
+  if (cvError) fieldErrors.cv = cvError;
 
   if (Object.keys(fieldErrors).length > 0) {
     return NextResponse.json(
@@ -145,43 +104,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "That role is no longer available." }, { status: 404 });
   }
 
-  const bytes = new Uint8Array(await file!.arrayBuffer());
-  if (!looksLikeCv(bytes, extension!)) {
+  const file = cv instanceof File ? cv : null;
+  const id = randomUUID();
+  const uploaded = await uploadPrivateCv(id, file!);
+  if ("error" in uploaded) {
+    if (uploaded.error === "Attach a PDF or Word CV.") {
+      return NextResponse.json(
+        { error: "Check the highlighted fields.", fieldErrors: { cv: uploaded.error } },
+        { status: 400 },
+      );
+    }
     return NextResponse.json(
       {
-        error: "Check the highlighted fields.",
-        fieldErrors: { cv: "Attach a PDF or Word CV." },
+        error:
+          uploaded.error === "unavailable"
+            ? "Applications are temporarily unavailable."
+            : "The application could not be saved. Try again.",
       },
-      { status: 400 },
-    );
-  }
-
-  let r2: ReturnType<typeof createR2Client>;
-  try {
-    r2 = createR2Client();
-  } catch {
-    return NextResponse.json(
-      { error: "Applications are temporarily unavailable." },
-      { status: 500 },
-    );
-  }
-
-  const id = randomUUID();
-  const cvKey = `applications/${id}/cv.${extension}`;
-
-  try {
-    await r2.client.send(
-      new PutObjectCommand({
-        Bucket: r2.bucket,
-        Key: cvKey,
-        Body: bytes,
-        ContentType: file!.type || "application/octet-stream",
-      }),
-    );
-  } catch (error) {
-    console.error("CV upload failed", error instanceof Error ? error.name : "Error");
-    return NextResponse.json(
-      { error: "The application could not be saved. Try again." },
       { status: 500 },
     );
   }
@@ -189,6 +128,7 @@ export async function POST(request: Request) {
   try {
     await insertApplication({
       id,
+      kind: "job",
       jobSlug: job.slug,
       jobTitle: job.title,
       firstName: fields.firstName,
@@ -200,18 +140,23 @@ export async function POST(request: Request) {
       message: fields.message,
       consent: true,
       createdAt: new Date().toISOString(),
-      cvUrl: cvKey,
+      cvUrl: uploaded.cvKey,
+      details: {},
     });
   } catch (error) {
     console.error("Application insert failed", error instanceof Error ? error.name : "Error");
-    await r2.client
-      .send(new DeleteObjectCommand({ Bucket: r2.bucket, Key: cvKey }))
-      .catch(() => undefined);
+    await uploaded.remove();
     return NextResponse.json(
       { error: "The application could not be saved. Try again." },
       { status: 500 },
     );
   }
+
+  await notifyStaff({
+    kind: "job",
+    name: `${fields.firstName} ${fields.lastName}`,
+    role: job.title,
+  });
 
   return NextResponse.json({ success: true });
 }

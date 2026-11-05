@@ -5,8 +5,23 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { definePlugin, useClient, type SanityClient } from "sanity";
 import { apiVersion, projectId } from "@/sanity/env";
 
+type SubmissionKind = "job" | "talent" | "employer" | "contact";
+
+type SubmissionDetails = {
+  role?: string;
+  experience?: string;
+  availability?: string;
+  company?: string;
+  eventDate?: string;
+  location?: string;
+  staffCount?: string;
+  staffType?: string;
+  subject?: string;
+};
+
 type ApplicationSummary = {
   id: string;
+  kind: SubmissionKind;
   jobTitle: string;
   firstName: string;
   lastName: string;
@@ -16,6 +31,15 @@ type ApplicationSummary = {
   region: string;
   message: string;
   createdAt: string;
+  hasCv: boolean;
+  details: SubmissionDetails;
+};
+
+const kindLabel: Record<SubmissionKind, string> = {
+  job: "Job application",
+  talent: "Talent network",
+  employer: "Employer request",
+  contact: "Contact message",
 };
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", {
@@ -39,6 +63,8 @@ function matchesSearch(application: ApplicationSummary, query: string) {
     application.region,
     application.jobTitle,
     application.message,
+    kindLabel[application.kind] ?? "",
+    ...Object.values(application.details ?? {}),
   ]
     .join(" ")
     .toLowerCase();
@@ -101,6 +127,7 @@ function ApplicationsTool() {
   const [query, setQuery] = useState("");
   const [role, setRole] = useState("");
   const [region, setRegion] = useState("");
+  const [kind, setKind] = useState("");
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
 
   const loadApplications = useCallback(async () => {
@@ -151,22 +178,26 @@ function ApplicationsTool() {
     [applications],
   );
   const regions = useMemo(
-    () => [...new Set(applications?.map((application) => application.region) ?? [])].sort(),
+    () =>
+      [...new Set(applications?.map((application) => application.region).filter(Boolean) ?? [])].sort(),
     [applications],
   );
   const visibleApplications = useMemo(() => {
     const search = query.trim().toLowerCase();
     return (applications ?? [])
       .filter((application) => {
+        if (kind && application.kind !== kind) return false;
         if (role && application.jobTitle !== role) return false;
         if (region && application.region !== region) return false;
         return matchesSearch(application, search);
       })
       .sort(compareApplications(sortOrder));
-  }, [applications, query, region, role, sortOrder]);
+  }, [applications, kind, query, region, role, sortOrder]);
 
   function toggleAll() {
-    const visibleIds = visibleApplications.map((application) => application.id);
+    const visibleIds = visibleApplications
+      .filter((application) => application.hasCv)
+      .map((application) => application.id);
     const everySelected = visibleIds.every((id) => selectedIds.includes(id));
     setSelectedIds((current) =>
       everySelected
@@ -267,6 +298,17 @@ function ApplicationsTool() {
             />
             <Flex align="center" gap={3} style={{ flexWrap: "wrap" }}>
               <Select
+                value={kind}
+                onChange={(event) => setKind(event.currentTarget.value)}
+                aria-label="Filter by type"
+              >
+                <option value="">All types</option>
+                <option value="job">Job applications</option>
+                <option value="talent">Talent network</option>
+                <option value="employer">Employer requests</option>
+                <option value="contact">Contact messages</option>
+              </Select>
+              <Select
                 value={role}
                 onChange={(event) => setRole(event.currentTarget.value)}
                 aria-label="Filter by role"
@@ -308,16 +350,22 @@ function ApplicationsTool() {
           <Flex align="center" gap={3}>
             <Checkbox
               checked={
-                visibleApplications.length > 0 &&
-                visibleApplications.every((application) => selectedIds.includes(application.id))
+                visibleApplications.some((application) => application.hasCv) &&
+                visibleApplications
+                  .filter((application) => application.hasCv)
+                  .every((application) => selectedIds.includes(application.id))
               }
               indeterminate={
-                visibleApplications.some((application) => selectedIds.includes(application.id)) &&
-                !visibleApplications.every((application) => selectedIds.includes(application.id))
+                visibleApplications.some(
+                  (application) => application.hasCv && selectedIds.includes(application.id),
+                ) &&
+                !visibleApplications
+                  .filter((application) => application.hasCv)
+                  .every((application) => selectedIds.includes(application.id))
               }
               onChange={toggleAll}
               aria-label="Select shown applications"
-              disabled={visibleApplications.length === 0}
+              disabled={!visibleApplications.some((application) => application.hasCv)}
             />
             <Text size={1}>
               {visibleApplications.length === applications.length ? "Select all" : "Select shown"}
@@ -333,6 +381,7 @@ function ApplicationsTool() {
               <Flex align="flex-start" gap={3}>
                 <Checkbox
                   checked={selectedIds.includes(application.id)}
+                  disabled={!application.hasCv}
                   onChange={() => toggleApplication(application.id)}
                   aria-label={`Select ${application.firstName} ${application.lastName}`}
                 />
@@ -341,26 +390,48 @@ function ApplicationsTool() {
                     {application.firstName} {application.lastName}
                   </Text>
                   <Text size={1} muted>
-                    {application.jobTitle} · {dateFormat.format(new Date(application.createdAt))}
+                    {kindLabel[application.kind] ?? "Submission"}
+                    {application.jobTitle ? ` · ${application.jobTitle}` : ""} ·{" "}
+                    {dateFormat.format(new Date(application.createdAt))}
                   </Text>
                 </Stack>
               </Flex>
               <Text size={1}>
                 {application.email}
-                <br />
-                {application.mobile}
+                {application.mobile ? (
+                  <>
+                    <br />
+                    {application.mobile}
+                  </>
+                ) : null}
               </Text>
-              <Text size={1}>
-                {application.city}, {application.region}
-              </Text>
+              {application.city || application.region ? (
+                <Text size={1}>
+                  {[application.city, application.region].filter(Boolean).join(", ")}
+                </Text>
+              ) : null}
+              {application.details?.company ? <Text size={1}>{application.details.company}</Text> : null}
+              {application.details?.eventDate || application.details?.location ? (
+                <Text size={1}>
+                  {[application.details.eventDate, application.details.location].filter(Boolean).join(" · ")}
+                </Text>
+              ) : null}
+              {application.details?.staffCount ? (
+                <Text size={1}>{application.details.staffCount} staff</Text>
+              ) : null}
+              {application.details?.availability ? (
+                <Text size={1}>{application.details.availability}</Text>
+              ) : null}
               {application.message ? <Text size={1}>{application.message}</Text> : null}
-              <Flex>
-                <Button
-                  text={downloadingId === application.id ? "Downloading" : "Download CV"}
-                  disabled={downloadingId === application.id || downloadingSelected}
-                  onClick={() => void downloadCv(application)}
-                />
-              </Flex>
+              {application.hasCv ? (
+                <Flex>
+                  <Button
+                    text={downloadingId === application.id ? "Downloading" : "Download CV"}
+                    disabled={downloadingId === application.id || downloadingSelected}
+                    onClick={() => void downloadCv(application)}
+                  />
+                </Flex>
+              ) : null}
             </Stack>
           </Card>
         ))}

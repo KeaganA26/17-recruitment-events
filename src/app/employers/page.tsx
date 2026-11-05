@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Check } from "lucide-react";
+import { EmployerForm } from "@/components/EmployerForm";
 import { SectionHeading } from "@/components/SectionHeading";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -152,6 +153,19 @@ export default function EmployersPage() {
             expertise for a specific project, we&apos;ll work with you to find
             people whose experience aligns with your requirements.
           </p>
+        </div>
+      </section>
+
+      <section className="container-page grid gap-12 py-16 lg:grid-cols-[0.9fr_1.1fr] md:py-20">
+        <div>
+          <SectionHeading
+            eyebrow="Event staff"
+            title="Tell us what you need"
+            description="Share the date, location, and the team you need. The request goes straight to the recruitment team."
+          />
+        </div>
+        <div className="rounded-2xl border border-border bg-brand-paper p-5 shadow-sm md:p-8">
+          <EmployerForm />
         </div>
       </section>
 

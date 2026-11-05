@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
+import { TurnstileField, type TurnstileHandle } from "@/components/TurnstileField";
 import { Loader2 } from "lucide-react";
 import { FileUpload } from "@/components/FileUpload";
 import { SelectField, TextAreaField, TextField } from "@/components/FormField";
@@ -45,6 +46,8 @@ export function TalentForm() {
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstile = useRef<TurnstileHandle>(null);
 
   const update = (key: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -73,10 +76,49 @@ export function TalentForm() {
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!validate()) return;
+    if (!validate() || !cv) return;
+    if (!turnstileToken) {
+      setErrors({ form: "Confirm you are not a robot and try again." });
+      return;
+    }
     setStatus("loading");
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    setStatus("success");
+    setErrors((current) => ({ ...current, form: "" }));
+
+    const body = new FormData();
+    body.set("firstName", form.firstName);
+    body.set("lastName", form.lastName);
+    body.set("email", form.email);
+    body.set("mobile", form.mobile);
+    body.set("city", form.city);
+    body.set("region", form.region);
+    body.set("role", form.role);
+    body.set("experience", form.experience);
+    body.set("availability", form.availability);
+    body.set("consent", "true");
+    body.set("cv", cv);
+    body.set("turnstileToken", turnstileToken);
+
+    try {
+      const response = await fetch("/api/talent", { method: "POST", body });
+      const data = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        fieldErrors?: Record<string, string>;
+      };
+      if (!response.ok) {
+        setErrors({
+          ...(data.fieldErrors ?? {}),
+          form: data.error ?? "The form could not be saved. Try again.",
+        });
+        setStatus("idle");
+        turnstile.current?.reset();
+        return;
+      }
+      setStatus("success");
+    } catch {
+      setErrors({ form: "The form could not be saved. Try again." });
+      setStatus("idle");
+      turnstile.current?.reset();
+    }
   };
 
   if (status === "success") {
@@ -216,10 +258,12 @@ export function TalentForm() {
           <p className="text-sm text-destructive">{errors.consent}</p>
         ) : null}
       </div>
+      <TurnstileField ref={turnstile} action="talent" onToken={setTurnstileToken} />
+      {errors.form ? <p className="text-sm text-destructive">{errors.form}</p> : null}
       <Button
         type="submit"
         size="xl"
-        disabled={status === "loading"}
+        disabled={status === "loading" || !turnstileToken}
         className="w-full bg-brand-coral text-white hover:bg-brand-coral/90"
       >
         {status === "loading" ? (
