@@ -1,5 +1,6 @@
 "use client";
 
+import "@/sanity/ignore-broken-trial-request";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { applicationsTool } from "@/sanity/applications/ApplicationsTool";
