@@ -3,12 +3,21 @@ import { Pool } from "pg";
 let pool: Pool | undefined;
 let schemaReady: Promise<void> | undefined;
 
-function getPool() {
+function databaseUrl() {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error("Database is not configured");
   }
-  pool ??= new Pool({ connectionString });
+  const local = /@(127\.0\.0\.1|localhost)(:|\/)/.test(connectionString);
+  if (local || connectionString.includes("uselibpqcompat=true")) return connectionString;
+  const join = connectionString.includes("?") ? "&" : "?";
+  return `${connectionString}${join}uselibpqcompat=true&sslmode=require`;
+}
+
+function getPool() {
+  const connectionString = databaseUrl();
+  const local = /@(127\.0\.0\.1|localhost)(:|\/)/.test(connectionString);
+  pool ??= new Pool({ connectionString, max: local ? 10 : 1 });
   return pool;
 }
 
