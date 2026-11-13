@@ -10,6 +10,7 @@ export const teamIntro = {
 export const team = [
   {
     name: "Jenna Ancill",
+    image: "/team/jenna-ancill.jpg",
     role: "Co-Founder | Events & Comms Recruitment",
     bio: "With over 16 years of experience across events, marketing and project delivery, Jenna brings a strong understanding of the events industry and the people who make it happen. Having worked across a diverse range of live events, corporate experiences, international projects and building teams, she understands the importance of finding the right talent for the right role. Jenna is passionate about building meaningful relationships, recognising great people and connecting businesses with professionals who can make a real impact.",
     email: "jenna@17recruitment.com",
@@ -40,6 +41,7 @@ export const team = [
   },
   {
     name: "Lee Collins",
+    image: "/team/lee-collins.jpg",
     role: "Co-Founder | Recruitment & Business Development",
     bio: "With 15 years of experience in recruitment and a strong background in building client relationships, Lee brings a wealth of industry knowledge, a commercial mindset and a people-focused approach to 17 Recruitment. Having built and developed recruitment businesses, he understands the importance of getting to know clients, identifying exceptional talent and creating partnerships that deliver long-term value. Lee is passionate about helping businesses grow by connecting them with the right people, while building relationships founded on trust, understanding and results.",
     email: "lee@17recruitment.com",
@@ -65,6 +67,7 @@ export const team = [
   },
   {
     name: "April",
+    image: "/team/april.jpg",
     role: "Recruitment Assistant",
     bio: "Keeping things organised behind the scenes, April supports the team with the day-to-day details that help 17 Recruitment run smoothly. From coordinating recruitment activity to supporting communication and administration, April helps ensure our candidates and clients receive a professional, responsive and seamless experience throughout the recruitment process.",
     note: "Three people, one shared goal: making the right connections.",

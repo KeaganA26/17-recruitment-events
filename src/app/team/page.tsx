@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
@@ -20,6 +21,10 @@ function initials(name: string) {
     .slice(0, 2);
 }
 
+function teamPhoto(member: { image?: string }) {
+  return member.image;
+}
+
 export default function TeamPage() {
   return (
     <>
@@ -39,21 +44,35 @@ export default function TeamPage() {
 
       <section className="container-page pb-16">
         <div className="grid gap-6 xl:grid-cols-3">
-          {team.map((member) => (
+          {team.map((member) => {
+            const photo = teamPhoto(member);
+            return (
             <article
               key={member.name}
               className="flex flex-col overflow-hidden rounded-2xl border border-border bg-brand-paper shadow-sm"
             >
-              <div className="grid aspect-[16/7] place-items-center bg-brand-ink text-brand-gold">
-                <div className="text-center">
-                  <p className="font-heading text-4xl font-extrabold">
-                    {initials(member.name)}
-                  </p>
-                  <p className="mt-2 text-xs font-semibold tracking-[0.16em] text-white/55 uppercase">
-                    Photo to follow
-                  </p>
+              {photo ? (
+                <div className="relative aspect-[3/4] bg-brand-ink">
+                  <Image
+                    src={photo}
+                    alt={member.name}
+                    fill
+                    className="object-cover object-[center_20%]"
+                    sizes="(min-width: 1280px) 400px, 100vw"
+                  />
                 </div>
-              </div>
+              ) : (
+                <div className="grid aspect-[3/4] place-items-center bg-brand-ink text-brand-gold">
+                  <div className="text-center">
+                    <p className="font-heading text-4xl font-extrabold">
+                      {initials(member.name)}
+                    </p>
+                    <p className="mt-2 text-xs font-semibold tracking-[0.16em] text-white/55 uppercase">
+                      Photo to follow
+                    </p>
+                  </div>
+                </div>
+              )}
               <div className="flex flex-1 flex-col p-6">
                 <h2 className="font-heading text-2xl font-bold">{member.name}</h2>
                 <p className="mt-1 text-sm font-medium text-brand-coral">
@@ -113,7 +132,8 @@ export default function TeamPage() {
                 </div>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
 

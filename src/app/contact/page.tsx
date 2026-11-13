@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Clock3, Mail, MessageCircle, Phone } from "lucide-react";
+import { Clock3, Mail } from "lucide-react";
 import { ContactForm } from "@/components/ContactForm";
 import { FAQ } from "@/components/FAQ";
 import { PageHero } from "@/components/PageHero";
@@ -20,18 +20,6 @@ export default function ContactPage() {
       href: `mailto:${site.email}`,
     },
     {
-      icon: Phone,
-      label: "Phone",
-      value: site.phone,
-      href: site.phoneHref,
-    },
-    {
-      icon: MessageCircle,
-      label: "WhatsApp",
-      value: site.whatsapp,
-      href: site.whatsappHref,
-    },
-    {
       icon: Clock3,
       label: "Business hours",
       value: site.hours,
@@ -46,7 +34,7 @@ export default function ContactPage() {
         description="Tell us what you need. Whether you're hiring or looking for your next opportunity, we'd love to hear from you."
       />
       <section className="container-page grid gap-10 py-12 lg:grid-cols-[0.9fr_1.1fr] lg:py-16">
-        <div className="grid gap-4">
+        <div className="grid content-start gap-4 self-start">
           {details.map((item) => {
             const Icon = item.icon;
             const content = (
@@ -72,10 +60,6 @@ export default function ContactPage() {
               <div key={item.label}>{content}</div>
             );
           })}
-          <p className="text-sm text-muted-foreground">
-            Phone and WhatsApp numbers are being confirmed and will be updated
-            shortly.
-          </p>
         </div>
         <div className="rounded-2xl border border-border bg-brand-paper p-5 shadow-sm md:p-8">
           <ContactForm />

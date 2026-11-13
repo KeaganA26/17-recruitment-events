@@ -5,11 +5,7 @@ export const site = {
   description:
     "Connecting exceptional talent with leading businesses across the events and communications industries. We specialise in permanent and freelance recruitment, matching talented professionals with opportunities and helping businesses build outstanding teams.",
   url: "https://17recruitment.com",
-  email: "hello@17recruitment.com",
-  phone: "+44 20 7946 1717",
-  phoneHref: "tel:+442079461717",
-  whatsapp: "+44 7700 900171",
-  whatsappHref: "https://wa.me/447700900171",
+  email: "jenna@17recruitment.com",
   hours: "Monday to Friday, 09:00 – 17:30 GMT",
   location: "London, United Kingdom",
   social: {
