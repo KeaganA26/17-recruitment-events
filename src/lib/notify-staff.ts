@@ -1,5 +1,5 @@
-const studioUrl = "https://17-recruitment-events.vercel.app/studio/applications";
-const recipient = "ancillkeagan@gmail.com";
+const studioUrl = "https://17recruitment.com/studio/applications";
+const recipient = "jenna@17recruitment.com";
 
 const kindLabel: Record<string, string> = {
   job: "Job application",
@@ -8,11 +8,37 @@ const kindLabel: Record<string, string> = {
   contact: "Contact message",
 };
 
+async function graphAccessToken(tenantId: string, clientId: string, clientSecret: string) {
+  const response = await fetch(
+    `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        scope: "https://graph.microsoft.com/.default",
+        grant_type: "client_credentials",
+      }),
+      signal: AbortSignal.timeout(10_000),
+    },
+  );
+  if (!response.ok) {
+    throw new Error(`token ${response.status}`);
+  }
+  const data = (await response.json()) as { access_token?: string };
+  if (!data.access_token) {
+    throw new Error("token missing");
+  }
+  return data.access_token;
+}
+
 export async function notifyStaff(input: { kind: string; name: string; role: string }) {
-  const token = process.env.CLOUDFLARE_EMAIL_API_TOKEN;
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || process.env.R2_ACCOUNT_ID;
-  const from = process.env.CLOUDFLARE_EMAIL_FROM;
-  if (!token || !accountId || !from) {
+  const tenantId = process.env.MICROSOFT_TENANT_ID;
+  const clientId = process.env.MICROSOFT_CLIENT_ID;
+  const clientSecret = process.env.MICROSOFT_CLIENT_SECRET;
+  const from = process.env.MICROSOFT_MAIL_FROM || "jenna@17recruitment.com";
+  if (!tenantId || !clientId || !clientSecret) {
     console.error("Staff email is not configured");
     return;
   }
@@ -26,20 +52,23 @@ export async function notifyStaff(input: { kind: string; name: string; role: str
   ].join("\n");
 
   try {
+    const accessToken = await graphAccessToken(tenantId, clientId, clientSecret);
     const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${accountId}/email/sending/send`,
+      `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(from)}/sendMail`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         signal: AbortSignal.timeout(10_000),
         body: JSON.stringify({
-          from: { address: from, name: "17 Recruitment Events" },
-          to: recipient,
-          subject: `${label}: ${input.name}`,
-          text,
+          message: {
+            subject: `${label}: ${input.name}`,
+            body: { contentType: "Text", content: text },
+            toRecipients: [{ emailAddress: { address: recipient } }],
+          },
+          saveToSentItems: false,
         }),
       },
     );

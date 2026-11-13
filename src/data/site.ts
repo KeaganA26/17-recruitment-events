@@ -4,7 +4,7 @@ export const site = {
   tagline: "Events & Communications Recruitment Specialists",
   description:
     "Connecting exceptional talent with leading businesses across the events and communications industries. We specialise in permanent and freelance recruitment, matching talented professionals with opportunities and helping businesses build outstanding teams.",
-  url: "https://17recruitmentevents.co.uk",
+  url: "https://17recruitment.com",
   email: "hello@17recruitment.com",
   phone: "+44 20 7946 1717",
   phoneHref: "tel:+442079461717",
