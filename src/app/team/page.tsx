@@ -80,9 +80,6 @@ export default function TeamPage() {
                 <p className="mt-4 text-sm leading-6 text-muted-foreground">
                   {member.bio}
                 </p>
-                {"note" in member && member.note ? (
-                  <p className="mt-4 text-sm font-medium">{member.note}</p>
-                ) : null}
                 <div className="mt-5 flex gap-2">
                   {"linkedin" in member && member.linkedin ? (
                     <a
