@@ -11,7 +11,6 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   candidateBenefits,
   employerSolutions,
-  howItWorks,
   roleGroups,
 } from "@/data/content";
 import { getFeaturedJobs } from "@/data/jobs";
@@ -52,33 +51,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-brand-ink text-white">
-        <div className="container-page py-20 md:py-24">
-          <SectionHeading
-            light
-            align="center"
-            eyebrow="Lorem ipsum"
-            title="Lorem ipsum dolor sit amet"
-            description="Consectetur adipiscing elit, sed do eiusmod tempor incididunt."
-          />
-          <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {howItWorks.map((item, index) => (
-              <Reveal key={item.step} delay={index * 0.05}>
-                <article className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                  <p className="font-heading text-sm font-bold tracking-[0.2em] text-brand-gold">
-                    {item.step}
-                  </p>
-                  <h3 className="font-heading mt-4 text-xl font-bold">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-white/65">
-                    {item.description}
-                  </p>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="container-page py-20 md:py-24">
         <SectionHeading
           eyebrow="Roles we recruit"
@@ -112,6 +84,14 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="bg-brand-ink">
+        <div className="container-page grid grid-cols-2 gap-8 py-16 md:grid-cols-4 md:py-20">
+          {stats.map((item) => (
+            <StatisticCard key={item.label} {...item} />
+          ))}
+        </div>
+      </section>
+
       <section className="bg-brand-sand/50">
         <div className="container-page grid items-center gap-10 py-20 lg:grid-cols-2 lg:gap-16 md:py-24">
           <Reveal>
@@ -127,9 +107,9 @@ export default async function HomePage() {
           </Reveal>
           <div>
             <SectionHeading
-              eyebrow="Lorem ipsum"
-              title="Lorem ipsum dolor sit amet"
-              description="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+              eyebrow="For candidates"
+              title="Why Work With 17 Recruitment"
+              description="We're a people-first team who know the events and communications industries inside out. We'll help you find the role that's right for you, not just the next one available."
             />
             <ul className="mt-8 grid gap-4">
               {candidateBenefits.map((benefit) => (
@@ -189,14 +169,6 @@ export default async function HomePage() {
               sizes="(min-width: 1024px) 40vw, 100vw"
             />
           </div>
-        </div>
-      </section>
-
-      <section className="bg-brand-ink">
-        <div className="container-page grid grid-cols-2 gap-8 py-16 md:grid-cols-4 md:py-20">
-          {stats.map((item) => (
-            <StatisticCard key={item.label} {...item} />
-          ))}
         </div>
       </section>
 

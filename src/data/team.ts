@@ -66,11 +66,10 @@ export const team = [
     ],
   },
   {
-    name: "April",
-    image: "/team/april.jpg",
+    name: "Rachel",
+    image: "/team/rachel.jpg",
     role: "Recruitment Assistant",
-    bio: "Keeping things organised behind the scenes, April supports the team with the day-to-day details that help 17 Recruitment run smoothly. From coordinating recruitment activity to supporting communication and administration, April helps ensure our candidates and clients receive a professional, responsive and seamless experience throughout the recruitment process.",
-    note: "Three people, one shared goal: making the right connections.",
+    bio: "Keeping things organised behind the scenes, Rachel supports the team with the day-to-day details that help 17 Recruitment run smoothly. From coordinating recruitment activity to supporting communication and administration, Rachel helps ensure our candidates and clients receive a professional, responsive and seamless experience throughout the recruitment process.",
     facts: [
       {
         label: "My superpower",

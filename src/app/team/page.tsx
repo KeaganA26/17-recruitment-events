@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Mail } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
 import { buttonVariants } from "@/components/ui/button";
 import { team, teamIntro } from "@/data/team";
@@ -101,15 +100,6 @@ export default function TeamPage() {
                       >
                         <path d="M6.5 9H3.8v11h2.7zm.2-3.8A1.6 1.6 0 1 1 5 3.6a1.6 1.6 0 0 1 1.7 1.6zM20.2 20h-2.7v-5.6c0-1.6-.6-2.5-1.8-2.5s-2 1.1-2 2.6V20H11V9h2.6v1.5c.5-.9 1.7-1.8 3.4-1.8 2.4 0 4.2 1.6 4.2 5z" />
                       </svg>
-                    </a>
-                  ) : null}
-                  {"email" in member && member.email ? (
-                    <a
-                      href={`mailto:${member.email}`}
-                      aria-label={`Email ${member.name}`}
-                      className="grid size-10 place-items-center rounded-full border border-border text-brand-ink transition-colors hover:bg-brand-ink hover:text-white"
-                    >
-                      <Mail className="size-4" aria-hidden="true" />
                     </a>
                   ) : null}
                 </div>

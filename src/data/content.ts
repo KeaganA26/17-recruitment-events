@@ -17,33 +17,6 @@ import {
   MessagesSquare,
 } from "lucide-react";
 
-export const howItWorks = [
-  {
-    step: "01",
-    title: "Lorem ipsum",
-    description:
-      "Dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.",
-  },
-  {
-    step: "02",
-    title: "Dolor sit amet",
-    description:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-  },
-  {
-    step: "03",
-    title: "Consectetur elit",
-    description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.",
-  },
-  {
-    step: "04",
-    title: "Adipiscing elit",
-    description:
-      "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia.",
-  },
-] as const;
-
 export const staffCategories = [
   {
     title: "Brand Ambassadors",
@@ -99,28 +72,28 @@ export const staffCategories = [
 
 export const candidateBenefits = [
   {
-    title: "Lorem ipsum",
-    description: "Dolor sit amet, consectetur adipiscing elit sed do eiusmod.",
+    title: "Specialists in your industry",
+    description: "We focus on events and communications, so we understand your skills and experience.",
   },
   {
-    title: "Dolor sit amet",
-    description: "Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
+    title: "Permanent & freelance roles",
+    description: "From your next permanent move to freelance projects that fit around you.",
   },
   {
-    title: "Consectetur elit",
-    description: "Duis aute irure dolor in reprehenderit in voluptate velit.",
+    title: "A personal approach",
+    description: "We take the time to understand your goals, strengths and what you want next.",
   },
   {
-    title: "Adipiscing elit",
-    description: "Excepteur sint occaecat cupidatat non proident sunt in culpa.",
+    title: "Opportunities that fit",
+    description: "We only put you forward for roles that genuinely match your experience and ambitions.",
   },
   {
-    title: "Sed do eiusmod",
-    description: "Tempor incididunt ut labore et dolore magna aliqua enim.",
+    title: "Honest advice",
+    description: "Open, straightforward guidance on roles, salaries and the market.",
   },
   {
-    title: "Tempor incididunt",
-    description: "Ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
+    title: "Support at every step",
+    description: "From the first conversation through interviews, offers and beyond.",
   },
 ] as const;
 
