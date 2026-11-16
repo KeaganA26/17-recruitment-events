@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   },
   description: site.description,
   metadataBase: new URL(site.url),
+  verification: {
+    google: "WpqvNSMgZ5JZ38FN13J5gmOa80z9Um7R3El2qhieNiA",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48" },
