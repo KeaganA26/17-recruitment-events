@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Banknote, Briefcase, CalendarDays, MapPin, Users } from "lucide-react";
 import { ApplyDialog } from "@/components/ApplyDialog";
 import { JobCard } from "@/components/JobCard";
+import { PageHero } from "@/components/PageHero";
 import { Badge } from "@/components/ui/badge";
 import { getJobBySlug, getJobs, getRelatedJobs } from "@/data/jobs";
 
@@ -35,6 +36,12 @@ export default async function JobDetailPage({ params }: JobPageProps) {
   const related = await getRelatedJobs(job.slug);
 
   return (
+    <>
+    <PageHero
+      eyebrow={job.category}
+      title={job.title}
+      description={`${job.location} · ${job.type} · ${job.rate}`}
+    />
     <article className="container-page py-10 md:py-16">
       <Link
         href="/jobs"
@@ -46,13 +53,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_20rem]">
         <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">{job.category}</Badge>
-            {job.new ? <Badge className="bg-brand-coral text-white">New</Badge> : null}
-          </div>
-          <h1 className="font-heading mt-4 text-4xl font-extrabold md:text-5xl">
-            {job.title}
-          </h1>
+          {job.new ? <Badge className="bg-brand-coral text-white">New</Badge> : null}
           <p className="mt-4 max-w-2xl text-lg leading-7 text-muted-foreground">
             {job.description}
           </p>
@@ -115,6 +116,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
         </div>
       </section>
     </article>
+    </>
   );
 }
 

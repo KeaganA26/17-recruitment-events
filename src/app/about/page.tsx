@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/PageHero";
+import { images } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "About",
@@ -23,10 +24,14 @@ export default function AboutPage() {
         eyebrow="About"
         title="About 17 Recruitment"
         description="Recruitment built around people, relationships and industry expertise."
+        image={{
+          src: images.about,
+          alt: "Guests filming a live event under stage lights",
+        }}
       />
 
-      <section className="container-page max-w-3xl py-16 md:py-20">
-        <div className="grid gap-5 text-base leading-8 text-muted-foreground">
+      <section className="container-page py-16 md:py-20">
+        <div className="grid max-w-3xl gap-5 text-base leading-8 text-muted-foreground">
           {paragraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}

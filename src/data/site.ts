@@ -97,7 +97,7 @@ export const images = {
   crowd: "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?auto=format&fit=crop&w=1600&q=80",
   bartender:
     "https://images.unsplash.com/photo-1572116469696-31de0f17cc88?auto=format&fit=crop&w=1600&q=80",
-  about: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1800&q=80",
+  about: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=1800&q=80",
   employers:
     "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1600&q=80",
 } as const;

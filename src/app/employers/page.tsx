@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { EmployerForm } from "@/components/EmployerForm";
+import { PageHero } from "@/components/PageHero";
 import { SectionHeading } from "@/components/SectionHeading";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -31,39 +31,24 @@ const story = [
 export default function EmployersPage() {
   return (
     <>
-      <section className="relative isolate overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src={images.employers}
-            alt="A professional team planning an event briefing"
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-ink/85 via-brand-ink/65 to-brand-ink/40" />
-        </div>
-        <div className="container-page relative py-20 md:py-28">
-          <p className="mb-3 text-xs font-semibold tracking-[0.22em] text-brand-gold uppercase">
-            For employers
-          </p>
-          <h1 className="font-heading max-w-3xl text-4xl font-extrabold text-white md:text-6xl">
-            Find the Right Talent for Your Business
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-white/75">
-            Specialist recruitment for the events and communications industries.
-            We connect businesses with exceptional permanent and freelance
-            talent to help your team deliver, grow and succeed.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="For employers"
+        title="Find the Right Talent for Your Business"
+        description="Specialist recruitment for the events and communications industries. We connect businesses with exceptional permanent and freelance talent to help your team deliver, grow and succeed."
+        image={{
+          src: images.employers,
+          alt: "A professional team planning an event briefing",
+        }}
+      />
 
-      <section className="container-page max-w-3xl py-16 md:py-20">
-        <SectionHeading title="Recruitment That Works for Your Business" />
-        <div className="mt-6 grid gap-5 text-base leading-8 text-muted-foreground">
-          {story.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
+      <section className="container-page py-16 md:py-20">
+        <div className="max-w-3xl">
+          <SectionHeading title="Recruitment That Works for Your Business" />
+          <div className="mt-6 grid gap-5 text-base leading-8 text-muted-foreground">
+            {story.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
         </div>
       </section>
 

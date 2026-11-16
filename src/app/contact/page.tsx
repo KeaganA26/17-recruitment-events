@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { Clock3, Mail } from "lucide-react";
 import { ContactForm } from "@/components/ContactForm";
 import { FAQ } from "@/components/FAQ";
 import { PageHero } from "@/components/PageHero";
-import { site } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -12,20 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
-  const details = [
-    {
-      icon: Mail,
-      label: "Email",
-      value: site.email,
-      href: `mailto:${site.email}`,
-    },
-    {
-      icon: Clock3,
-      label: "Business hours",
-      value: site.hours,
-    },
-  ];
-
   return (
     <>
       <PageHero
@@ -33,35 +17,8 @@ export default function ContactPage() {
         title="Contact Us"
         description="Tell us what you need. Whether you're hiring or looking for your next opportunity, we'd love to hear from you."
       />
-      <section className="container-page grid gap-10 py-12 lg:grid-cols-[0.9fr_1.1fr] lg:py-16">
-        <div className="grid content-start gap-4 self-start">
-          {details.map((item) => {
-            const Icon = item.icon;
-            const content = (
-              <article className="rounded-2xl border border-border bg-brand-paper p-5">
-                <div className="flex items-center gap-3">
-                  <span className="grid size-10 place-items-center rounded-xl bg-brand-ink text-brand-gold">
-                    <Icon className="size-4" aria-hidden="true" />
-                  </span>
-                  <div>
-                    <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                      {item.label}
-                    </p>
-                    <p className="mt-1 font-medium">{item.value}</p>
-                  </div>
-                </div>
-              </article>
-            );
-            return item.href ? (
-              <a key={item.label} href={item.href}>
-                {content}
-              </a>
-            ) : (
-              <div key={item.label}>{content}</div>
-            );
-          })}
-        </div>
-        <div className="rounded-2xl border border-border bg-brand-paper p-5 shadow-sm md:p-8">
+      <section className="container-page py-12 lg:py-16">
+        <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-brand-paper p-5 shadow-sm md:p-8">
           <ContactForm />
         </div>
       </section>
