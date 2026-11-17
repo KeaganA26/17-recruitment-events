@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
 import { TurnstileField, type TurnstileHandle } from "@/components/TurnstileField";
 import { Loader2 } from "lucide-react";
@@ -216,6 +217,13 @@ export function EmployerForm() {
         error={errors.message}
         placeholder="Tell us about the event, dress code, call time and any special requirements."
       />
+      <p className="text-sm leading-6 text-muted-foreground">
+        We use these details to respond to your staffing request. Read our{" "}
+        <Link href="/privacy" className="font-medium text-foreground underline underline-offset-4">
+          Privacy Policy
+        </Link>
+        .
+      </p>
       <TurnstileField ref={turnstile} action="employer" onToken={setTurnstileToken} />
       {errors.form ? <p className="text-sm text-destructive">{errors.form}</p> : null}
       <Button

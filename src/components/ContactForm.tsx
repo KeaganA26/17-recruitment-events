@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
 import { TurnstileField, type TurnstileHandle } from "@/components/TurnstileField";
 import { Loader2 } from "lucide-react";
@@ -143,6 +144,13 @@ export function ContactForm() {
         onChange={(event) => update("message", event.target.value)}
         error={errors.message}
       />
+      <p className="text-sm leading-6 text-muted-foreground">
+        We use these details to reply to you. Read our{" "}
+        <Link href="/privacy" className="font-medium text-foreground underline underline-offset-4">
+          Privacy Policy
+        </Link>
+        .
+      </p>
       <TurnstileField ref={turnstile} action="contact" onToken={setTurnstileToken} />
       {errors.form ? <p className="text-sm text-destructive">{errors.form}</p> : null}
       <Button

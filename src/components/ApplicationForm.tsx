@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
 import { TurnstileField, type TurnstileHandle } from "@/components/TurnstileField";
 import { Loader2 } from "lucide-react";
@@ -210,10 +211,17 @@ export function ApplicationForm({ jobTitle, jobSlug }: ApplicationFormProps) {
             className="mt-0.5"
           />
           <Label htmlFor="consent" className="text-sm leading-6 font-normal">
-            I consent to 17 Recruitment Events using my information for
-            recruitment purposes.
+            I consent to 17 Recruitment using my information for recruitment
+            purposes, as described in the Privacy Policy.
           </Label>
         </div>
+        <p className="text-sm leading-6 text-muted-foreground">
+          Read the{" "}
+          <Link href="/privacy" className="font-medium text-foreground underline underline-offset-4">
+            Privacy Policy
+          </Link>
+          .
+        </p>
         {errors.consent ? (
           <p className="text-sm text-destructive">{errors.consent}</p>
         ) : null}
